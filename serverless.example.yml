@@ -1,0 +1,66 @@
+# Sample API Gateway config with JWT authorizer
+
+#This deployment will deploy:
+#1- An API gateway that protects an HTTP API defined by the "INTERNAL_API_URL" parameter.
+#2- A lambda authorizer that will put OAuth2 protection on said API.
+
+#Rename to whatever you'd like.
+service: api-gw-with-oauth2
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+
+# you can overwrite defaults here
+  stage: stg
+  region: us-east-1
+  logs:
+    restApi: true
+
+
+# you can define service wide environment variables here
+  environment:
+    INTERNAL_API_URL: HTTPS://YOUR_INTERNAL_URL_HERE
+    ISSUER: HTTPS://THE_URL_OF_YOUR_OAUTH2_ISSUER
+    CLIENT_ID: M2M_CLIENT_ID_FOR_INTROSPECTION
+    AUDIENCE: YOUR_API_AUDIENCE
+    
+functions:
+  jwt_authorizer:
+    handler: index.handler
+    events:
+      - http:
+          path: /example_path
+          method: POST
+          integration: http
+          authorizer: jwt_authorizer
+          request:
+            uri: ${self:provider.environment.INTERNAL_API_URL}
+            parameters:
+              paths:
+                proxy: false
+            template:
+              application/xml: ${file(./xmlheaderpolicy)}
+              application/json: ${file(./jsonheaderpolicy)}
+            passThrough: NEVER
+          response:
+            statusCodes:
+              200:
+                pattern: '2\d{2}'
+              401:
+                pattern: '401'
+              403:
+                pattern: '403'
+              500:
+                pattern: '5\d{2}'
+                
+      - http:
+          path: /authz_test
+          method: GET
+          integration: http-proxy
+          authorizer: jwt_authorizer
+          request:
+            uri: https://okta.com
+            parameters:
+              paths:
+                proxy: true

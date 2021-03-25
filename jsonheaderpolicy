@@ -1,0 +1,6 @@
+$input.body
+#set($context.requestOverride.header.Content-Type = "text/xml")
+#set($context.requestOverride.header.Accept = "text/xml")
+#set($context.requestOverride.header.templatematched = "JSON TEMPLATE")
+#set($context.requestOverride.header.x-forwarded-for = "")
+#set($context.requestOverride.header.Authorization = "")

@@ -7,6 +7,10 @@ It has been designed to work with Okta but should work with any OAuth 2.0 Author
 
 The authorizer uses Okta's [JWT Verifier library](https://github.com/okta/okta-oidc-js/tree/master/packages/jwt-verifier) to retrieve keys (jwks) from your Okta tenant and verify tokens.
 
+## A note about this fork
+
+This fork leverages the [Serverless Framwork](https://www.serverless.com/) to assist with the deployment of the lambda function, as well as the API gateway. In the API gateway, there are a few modifications I'm making on the HTTP requests as examples.
+
 ## Prerequisites
 
 There are three main components to this setup:

@@ -3,3 +3,4 @@ dist
 .npmrc
 *.swp
 .DS_Store
+serverless.yml
